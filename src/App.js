@@ -7,6 +7,10 @@ import { ApolloProvider } from 'react-apollo';
 
 import Classes from './Classes';
 
+import gql from 'graphql-tag';
+
+import { Query, Mutation } from 'react-apollo';
+
 const cache = new InMemoryCache({
     dataIdFromObject: ({ nodeId }) => nodeId || null,
 });
@@ -20,7 +24,37 @@ export default class App extends Component {
     render() {
         return (
             <ApolloProvider client={client}>
-                <Classes/>
+                <div>
+                    <Query
+                        query={gql`query {
+                                allPeople{
+                                    nodes{
+                                        id
+                                        firstName
+                                        lastName
+                                    }
+                                }
+                            }`}
+                    >
+                        {({
+                            data: {
+                                allPeople: {
+                                    nodes: people = []
+                                } = {}
+                            } = {}
+                        }) => (
+                                <div>
+                                    {people.map(person => (
+                                    <h1>
+                                        {person.firstName}
+                                        {person.lastName}
+                                    </h1>
+                                ))}
+                                </div>
+                            )}
+                    </Query>
+                </div>
+                {/* <Classes/> */}
             </ApolloProvider>
         );
     }
